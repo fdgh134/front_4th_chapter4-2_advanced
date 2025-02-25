@@ -174,7 +174,7 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
 
   const changeSearchOption = useCallback((field: keyof SearchOption, value: SearchOption[typeof field]) => {
     setPage(1);
-    setSearchOptions(({ ...searchOptions, [field]: value }));
+    setSearchOptions(prev => ({ ...prev, [field]: value }));
     loaderWrapperRef.current?.scrollTo(0, 0);
   }, []);
 
@@ -257,7 +257,7 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
                 <FormLabel>학점</FormLabel>
                 <Select
                   value={searchOptions.credits}
-                  onChange={(e) => changeSearchOption('credits', e.target.value)}
+                  onChange={(e) => changeSearchOption('credits', e.target.value ? Number(e.target.value) : undefined)}
                 >
                   <option value="">전체</option>
                   <option value="1">1학점</option>
@@ -271,12 +271,12 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
               <FormControl>
                 <FormLabel>학년</FormLabel>
                 <CheckboxGroup
-                  value={searchOptions.grades}
+                  value={searchOptions.grades.map(String)}
                   onChange={(value) => changeSearchOption('grades', value.map(Number))}
                 >
                   <HStack spacing={4}>
                     {[1, 2, 3, 4].map(grade => (
-                      <Checkbox key={grade} value={grade}>{grade}학년</Checkbox>
+                      <Checkbox key={String(grade)} value={String(grade)}>{grade}학년</Checkbox>
                     ))}
                   </HStack>
                 </CheckboxGroup>
@@ -302,11 +302,11 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
                 <FormLabel>시간</FormLabel>
                 <CheckboxGroup
                   colorScheme="green"
-                  value={searchOptions.times}
+                  value={searchOptions.times.map(String)}
                   onChange={(values) => changeSearchOption('times', values.map(Number))}
                 >
                   <Wrap spacing={1} mb={2}>
-                    {searchOptions.times.sort((a, b) => a - b).map(time => (
+                    {searchOptions.times.sort((a, b) => a - b).map((time) => (
                       <Tag key={time} size="sm" variant="outline" colorScheme="blue">
                         <TagLabel>{time}교시</TagLabel>
                         <TagCloseButton
