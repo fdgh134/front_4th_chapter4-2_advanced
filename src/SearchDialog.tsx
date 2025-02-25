@@ -82,6 +82,7 @@ const TIME_SLOTS = [
 
 const PAGE_SIZE = 100;
 
+// API 호출 함수
 const fetchMajors = () => axios.get<Lecture[]>('/schedules-majors.json');
 const fetchLiberalArts = () => axios.get<Lecture[]>('/schedules-liberal-arts.json');
 
@@ -175,25 +176,22 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
     setPage(1);
     setSearchOptions(({ ...searchOptions, [field]: value }));
     loaderWrapperRef.current?.scrollTo(0, 0);
-  }, [searchOptions]);
+  }, []);
 
-  const addSchedule = (lecture: Lecture) => {
-    if (!searchInfo) return;
-
-    const { tableId } = searchInfo;
-
-    const schedules = parseSchedule(lecture.schedule).map(schedule => ({
-      ...schedule,
-      lecture
-    }));
-
-    setSchedulesMap(prev => ({
-      ...prev,
-      [tableId]: [...prev[tableId], ...schedules]
-    }));
-
-    onClose();
-  };
+  const addSchedule = useCallback(
+    (lecture: Lecture) => {
+      if (!searchInfo) return;
+      const { tableId } = searchInfo;
+      const schedules = parseSchedule(lecture.schedule).map(schedule => ({
+        ...schedule,
+        lecture
+      }));
+      setSchedulesMap(prev => ({
+        ...prev,
+        [tableId]: [...prev[tableId], ...schedules]
+      }));
+      onClose();
+  },[onClose, searchInfo, setSchedulesMap]);
 
   useEffect(() => {
     const start = performance.now();

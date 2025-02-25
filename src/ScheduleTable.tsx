@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -127,7 +128,7 @@ const ScheduleTable = ({ tableId, schedules, onScheduleTimeClick, onDeleteButton
   );
 };
 
-const DraggableSchedule = ({
+const DraggableSchedule = React.memo(({
  id,
  data,
  bg,
@@ -175,6 +176,6 @@ const DraggableSchedule = ({
       </PopoverContent>
     </Popover>
   );
-}
+});
 
 export default ScheduleTable;

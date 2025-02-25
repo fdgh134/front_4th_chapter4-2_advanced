@@ -48,19 +48,17 @@ export default function ScheduleDndProvider({ children }: PropsWithChildren) {
     const moveDayIndex = Math.floor(x / 80);
     const moveTimeIndex = Math.floor(y / 30);
 
-    setSchedulesMap({
-      ...schedulesMap,
-      [tableId]: schedulesMap[tableId].map((targetSchedule, targetIndex) => {
-        if (targetIndex !== Number(index)) {
-          return { ...targetSchedule }
-        }
+    setSchedulesMap((prev) => ({
+      ...prev,
+      [tableId]: prev[tableId].map((targetSchedule, targetIndex) => {
+        if (targetIndex !== Number(index)) return targetSchedule;
         return {
           ...targetSchedule,
           day: DAY_LABELS[nowDayIndex + moveDayIndex],
           range: targetSchedule.range.map(time => time + moveTimeIndex),
-        }
-      })
-    })
+        };
+      }),
+    }));
   };
 
   return (
