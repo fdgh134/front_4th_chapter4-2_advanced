@@ -127,11 +127,12 @@ const fetchAllLectures = async () => {
 // ]);
 
 // TODO: 이 컴포넌트에서 불필요한 연산이 발생하지 않도록 다양한 방식으로 시도해주세요.
-const SearchDialog = ({ searchInfo, onClose }: Props) => {
+export default function SearchDialog({ searchInfo, onClose }: Props) {
   const { setSchedulesMap } = useScheduleContext();
 
   const loaderWrapperRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
+
   const [lectures, setLectures] = useState<Lecture[]>([]);
   const [page, setPage] = useState(1);
   const [searchOptions, setSearchOptions] = useState<SearchOption>({
@@ -184,7 +185,7 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
       const { tableId } = searchInfo;
       const schedules = parseSchedule(lecture.schedule).map(schedule => ({
         ...schedule,
-        lecture
+        lecture,
       }));
       setSchedulesMap(prev => ({
         ...prev,
@@ -227,13 +228,15 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
   }, [lastPage]);
 
   useEffect(() => {
-    setSearchOptions(prev => ({
-      ...prev,
-      days: searchInfo?.day ? [searchInfo.day] : [],
-      times: searchInfo?.time ? [searchInfo.time] : [],
-    }))
-    setPage(1);
-  }, [searchInfo]);
+    if (searchInfo) {
+      setSearchOptions(prev => ({
+        ...prev,
+        days: searchInfo.day !== undefined ? [searchInfo.day] : [],
+        times: searchInfo.time !== undefined ? [searchInfo.time] : [],
+      }));
+      setPage(1);
+    }
+  }, []);
 
   return (
     <Modal isOpen={Boolean(searchInfo)} onClose={onClose} size="6xl">
@@ -401,5 +404,3 @@ const SearchDialog = ({ searchInfo, onClose }: Props) => {
     </Modal>
   );
 };
-
-export default SearchDialog;
