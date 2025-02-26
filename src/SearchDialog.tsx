@@ -117,14 +117,6 @@ const fetchAllLectures = async () => {
     liberalArtsPromise,
   ]);
 };
-// const fetchAllLectures = async () => await Promise.all([
-  // (console.log('API Call 1', performance.now()), await fetchMajors()),
-  // (console.log('API Call 2', performance.now()), await fetchLiberalArts()),
-  // (console.log('API Call 3', performance.now()), await fetchMajors()),
-  // (console.log('API Call 4', performance.now()), await fetchLiberalArts()),
-  // (console.log('API Call 5', performance.now()), await fetchMajors()),
-  // (console.log('API Call 6', performance.now()), await fetchLiberalArts()),
-// ]);
 
 // TODO: 이 컴포넌트에서 불필요한 연산이 발생하지 않도록 다양한 방식으로 시도해주세요.
 export default function SearchDialog({ searchInfo, onClose }: Props) {
@@ -174,8 +166,14 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
   const allMajors = useMemo(() => [...new Set(lectures.map(lecture => lecture.major))], [lectures]);
 
   const changeSearchOption = useCallback((field: keyof SearchOption, value: SearchOption[typeof field]) => {
-    setPage(1);
-    setSearchOptions(prev => ({ ...prev, [field]: value }));
+    console.log("[changeSearchOption] 이전값", field, searchOptions[field]);
+    console.log("[changeSearchOption] 새 값 =>", value);
+    // setPage(1);
+    setSearchOptions(prev => {
+      const next = { ...prev, [field]: value };
+      console.log("[changeSearchOption] after =>", next[field]);
+      return next;
+    });
     loaderWrapperRef.current?.scrollTo(0, 0);
   }, []);
 
@@ -228,15 +226,13 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
   }, [lastPage]);
 
   useEffect(() => {
-    if (searchInfo) {
-      setSearchOptions(prev => ({
-        ...prev,
-        days: searchInfo.day !== undefined ? [searchInfo.day] : [],
-        times: searchInfo.time !== undefined ? [searchInfo.time] : [],
-      }));
-      setPage(1);
-    }
-  }, []);
+    setSearchOptions(prev => ({
+      ...prev,
+      days: searchInfo?.day ? [searchInfo.day] : [],
+      times: searchInfo?.time ? [searchInfo.time] : [],
+    }))
+    setPage(1);
+  }, [searchInfo]);
 
   return (
     <Modal isOpen={Boolean(searchInfo)} onClose={onClose} size="6xl">
@@ -260,7 +256,7 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
                 <FormLabel>학점</FormLabel>
                 <Select
                   value={searchOptions.credits}
-                  onChange={(e) => changeSearchOption('credits', e.target.value ? Number(e.target.value) : undefined)}
+                  onChange={(e) => changeSearchOption('credits', e.target.value)}
                 >
                   <option value="">전체</option>
                   <option value="1">1학점</option>
@@ -274,12 +270,12 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
               <FormControl>
                 <FormLabel>학년</FormLabel>
                 <CheckboxGroup
-                  value={searchOptions.grades.map(String)}
+                  value={searchOptions.grades}
                   onChange={(value) => changeSearchOption('grades', value.map(Number))}
                 >
                   <HStack spacing={4}>
                     {[1, 2, 3, 4].map(grade => (
-                      <Checkbox key={String(grade)} value={String(grade)}>{grade}학년</Checkbox>
+                      <Checkbox key={grade} value={grade}>{grade}학년</Checkbox>
                     ))}
                   </HStack>
                 </CheckboxGroup>
@@ -305,11 +301,11 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
                 <FormLabel>시간</FormLabel>
                 <CheckboxGroup
                   colorScheme="green"
-                  value={searchOptions.times.map(String)}
+                  value={searchOptions.times}
                   onChange={(values) => changeSearchOption('times', values.map(Number))}
                 >
                   <Wrap spacing={1} mb={2}>
-                    {searchOptions.times.sort((a, b) => a - b).map((time) => (
+                    {searchOptions.times.sort((a, b) => a - b).map(time => (
                       <Tag key={time} size="sm" variant="outline" colorScheme="blue">
                         <TagLabel>{time}교시</TagLabel>
                         <TagCloseButton
