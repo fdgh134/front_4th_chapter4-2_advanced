@@ -1,3 +1,4 @@
+import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { ScheduleProvider } from "./ScheduleContext.tsx";
 import { ScheduleTables } from "./ScheduleTables.tsx";
@@ -9,11 +10,14 @@ function App() {
     <ChakraProvider>
       <ScheduleProvider>
         <ScheduleDndProvider>
-          <ScheduleTables/>
+          {({ activeTableId }) => (
+            <ScheduleTables activeTableId={activeTableId} />
+          )}
         </ScheduleDndProvider>
       </ScheduleProvider>
     </ChakraProvider>
   );
 }
+
 
 export default App;

@@ -4,7 +4,12 @@ import { useScheduleContext } from "./ScheduleContext.tsx";
 import SearchDialog from "./SearchDialog.tsx";
 import { useState } from "react";
 
-export const ScheduleTables = () => {
+interface ScheduleTablesProps {
+  // ScheduleDndProvider로부터 받아온 activeTableId
+  activeTableId?: string | null;
+}
+
+export const ScheduleTables = ({ activeTableId }: ScheduleTablesProps) => {
   const { schedulesMap, setSchedulesMap } = useScheduleContext();
   const [searchInfo, setSearchInfo] = useState<{
     tableId: string;
@@ -46,6 +51,7 @@ export const ScheduleTables = () => {
               key={`schedule-table-${index}`}
               schedules={schedules}
               tableId={tableId}
+              activeTableId={activeTableId}
               onScheduleTimeClick={(timeInfo) => setSearchInfo({ tableId, ...timeInfo })}
               onDeleteButtonClick={({ day, time }) => setSchedulesMap((prev) => ({
                 ...prev,

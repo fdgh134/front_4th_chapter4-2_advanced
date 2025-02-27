@@ -86,8 +86,6 @@ const PAGE_SIZE = 100;
 const fetchMajors = () => axios.get<Lecture[]>('/schedules-majors.json');
 const fetchLiberalArts = () => axios.get<Lecture[]>('/schedules-liberal-arts.json');
 
-// TODO: 이 코드를 개선해서 API 호출을 최소화 해보세요 + Promise.all이 현재 잘못 사용되고 있습니다. 같이 개선해주세요.
-
 // 캐시를 생성하는 헬퍼 함수
 function createCachedFetch<T>(fetchFn: () => Promise<T>, label: string) {
   let cache: Promise<T> | null = null;
@@ -166,12 +164,9 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
   const allMajors = useMemo(() => [...new Set(lectures.map(lecture => lecture.major))], [lectures]);
 
   const changeSearchOption = useCallback((field: keyof SearchOption, value: SearchOption[typeof field]) => {
-    console.log("[changeSearchOption] 이전값", field, searchOptions[field]);
-    console.log("[changeSearchOption] 새 값 =>", value);
-    // setPage(1);
+    setPage(1);
     setSearchOptions(prev => {
       const next = { ...prev, [field]: value };
-      console.log("[changeSearchOption] after =>", next[field]);
       return next;
     });
     loaderWrapperRef.current?.scrollTo(0, 0);
@@ -363,9 +358,9 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
                 <Thead>
                   <Tr>
                     <Th width="100px">과목코드</Th>
-                    <Th width="50px">학년</Th>
+                    <Th width="60px">학년</Th>
                     <Th width="200px">과목명</Th>
-                    <Th width="50px">학점</Th>
+                    <Th width="60px">학점</Th>
                     <Th width="150px">전공</Th>
                     <Th width="150px">시간</Th>
                     <Th width="80px"></Th>
@@ -379,9 +374,9 @@ export default function SearchDialog({ searchInfo, onClose }: Props) {
                     {visibleLectures.map((lecture, index) => (
                       <Tr key={`${lecture.id}-${index}`}>
                         <Td width="100px">{lecture.id}</Td>
-                        <Td width="50px">{lecture.grade}</Td>
+                        <Td width="60px" textAlign="center">{lecture.grade}</Td>
                         <Td width="200px">{lecture.title}</Td>
-                        <Td width="50px">{lecture.credits}</Td>
+                        <Td width="60px" textAlign="center">{lecture.credits}</Td>
                         <Td width="150px" dangerouslySetInnerHTML={{ __html: lecture.major }}/>
                         <Td width="150px" dangerouslySetInnerHTML={{ __html: lecture.schedule }}/>
                         <Td width="80px">
