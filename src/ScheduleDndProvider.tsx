@@ -90,7 +90,7 @@ export default function ScheduleDndProvider({ children }: ScheduleDndProviderPro
       setSchedulesMap((prev) => {
         const newArr = prev[tableId].map((item, i) => {
           if (i !== Number(index)) return item;
-          const nowDayIndex = DAY_LABELS.indexOf(item.day);
+          const nowDayIndex = DAY_LABELS.indexOf(item.day as typeof DAY_LABELS[number]);
           return {
             ...item,
             day: DAY_LABELS[nowDayIndex + moveDayIndex],
